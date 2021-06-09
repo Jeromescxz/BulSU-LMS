@@ -30,11 +30,9 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "white"
   },
   signout: {
-    borderTop: "1px solid white",
-    borderBottom: "1px solid white",
     marginTop: 30,
     "&:hover": {
-      background: "#D32F2F"
+      background: "#ff8178"
     }
   },
   listitem: {
