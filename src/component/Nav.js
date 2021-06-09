@@ -62,7 +62,7 @@ function Nav() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <AppBar position="sticky" className={classes.appbar} elevation={8}>
+      <AppBar position="sticky" className={classes.appbar} elevation={0}>
         <Toolbar>
           <IconButton color="primary" onClick={() => setOpen(true)}>
             <MenuIcon />
@@ -112,6 +112,7 @@ function Nav() {
           </SwipeableDrawer>
         </Toolbar>
       </AppBar>
+      <Divider />
     </div>
   );
 }
