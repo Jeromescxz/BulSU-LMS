@@ -6,7 +6,6 @@ import theme from "../utils/theme";
 import {
   Card,
   TextField,
-  Paper,
   FormControl,
   InputLabel,
   OutlinedInput,

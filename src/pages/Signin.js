@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
 import theme from "../utils/theme";
+import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
 import {
   makeStyles,
   Card,
@@ -20,6 +21,14 @@ import { Alert } from "@material-ui/lab";
 //icons
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
+
+const uiConfig = {
+  // Popup signin flow rather than redirect flow.
+  signInFlow: "popup",
+  // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
+  // We will display Google and Facebook as auth providers.
+  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID]
+};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -169,6 +178,7 @@ function Signin() {
           >
             LOGIN
           </Button>
+
           <Button
             onClick={() => history.push("/Signup")}
             className={classes.field}
@@ -177,6 +187,10 @@ function Signin() {
           >
             SIGNUP
           </Button>
+          <StyledFirebaseAuth
+            uiConfig={uiConfig}
+            firebaseAuth={firebase.auth()}
+          />
         </form>
       </Card>
     </div>

@@ -35,6 +35,12 @@ const theme = createMuiTheme({
       "@media (min-width:600px)": {
         fontSize: "40px"
       }
+    },
+    h5: {
+      fontSize: "20px",
+      "@media (min-width:600px)": {
+        fontSize: "25px"
+      }
     }
   }
 });
