@@ -2,6 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
+import theme from "../utils/theme";
 import {
   makeStyles,
   Card,
@@ -14,6 +15,7 @@ import {
   IconButton,
   Typography,
   Button,
+  useMediaQuery
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 //icons
@@ -26,11 +28,12 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "column"
   },
 
   form: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column"
   },
   card: {
     width: "320px",
@@ -38,25 +41,36 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 10,
     border: "2px solid black",
     [theme.breakpoints.down("xs")]: {
-      width: 200,
-    },
+      width: 200
+    }
   },
 
   field: {
     margin: theme.spacing(1),
+    [theme.breakpoints.down("xs")]: {
+      height: 30,
+      width: 185,
+      fontSize: 14
+    }
   },
   errors: {
-    margin: theme.spacing(1),
-  },
+    margin: theme.spacing(2),
+    width: 320,
+    [theme.breakpoints.down("xs")]: {
+      fontSize: 12,
+      width: 200
+    }
+  }
 }));
 function Signin() {
   const classes = useStyles();
   const history = useHistory("");
+  const fieldSize = useMediaQuery(theme.breakpoints.down("xs"));
   const [values, setValues] = useState({
     email: "",
     password: "",
     showPassword: false,
-    errors: "",
+    errors: ""
   });
 
   const handleChange = (prop) => (event) => {
@@ -98,30 +112,32 @@ function Signin() {
   };
   return (
     <Paper className={classes.root}>
+      {values.errors ? (
+        <Alert severity="error" className={classes.errors}>
+          {values.errors}
+        </Alert>
+      ) : (
+        ""
+      )}
       <Card elevation={10} className={classes.card}>
         <form className={classes.form}>
-          <Typography
-            className={classes.field}
-            variant="h4"
-            color="textPrimary"
-          >
+          <Typography variant="h4" color="textPrimary">
             Login
           </Typography>
-          {values.errors ? (
-            <Alert severity="error" className={classes.errors}>
-              {values.errors}
-            </Alert>
-          ) : (
-            ""
-          )}
+
           <TextField
             className={classes.field}
             value={values.email}
             onChange={handleChange("email")}
             label="Email@email.com"
             variant="outlined"
+            size={fieldSize ? "small" : "medium"}
           />
-          <FormControl className={classes.field} variant="outlined">
+          <FormControl
+            className={classes.field}
+            variant="outlined"
+            size={fieldSize ? "small" : "medium"}
+          >
             <InputLabel htmlFor="outlined-adornment-password">
               Password
             </InputLabel>

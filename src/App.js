@@ -6,7 +6,7 @@ import {
   BrowserRouter as Router,
   Route,
   Switch,
-  Redirect,
+  Redirect
 } from "react-router-dom";
 import PrivateRoute from "./router/privateRoute";
 import PublicRoute from "./router/publicRoute";
@@ -22,14 +22,14 @@ var useStyles = makeStyles(() => ({
     height: "100vh",
     display: "flex",
     justifyContent: "center",
-    alignItems: "center",
-  },
+    alignItems: "center"
+  }
 }));
 function App() {
   const classes = useStyles();
   const [state, setstate] = useState({
     isAuth: false,
-    isLoading: true,
+    isLoading: true
   });
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function (user) {
@@ -48,6 +48,7 @@ function App() {
       </div>
     );
   }
+
   return (
     <ThemeProvider theme={theme}>
       <Router>

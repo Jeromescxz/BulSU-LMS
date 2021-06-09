@@ -2,6 +2,7 @@ import { React, useState } from "react";
 import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
+import theme from "../utils/theme";
 import {
   Card,
   TextField,
@@ -13,6 +14,7 @@ import {
   IconButton,
   Typography,
   Button,
+  useMediaQuery
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 //icons
@@ -25,46 +27,60 @@ var useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+    flexDirection: "column"
   },
 
   form: {
     display: "flex",
-    flexDirection: "column",
+    flexDirection: "column"
   },
   card: {
     width: "320px",
     padding: 20,
     borderRadius: 10,
     border: "2px solid black",
-    
+
     [theme.breakpoints.down("xs")]: {
-      width: 200,
-    },
+      width: 200
+    }
   },
 
   field: {
-    margin: theme.spacing(1),
+    margin: theme.spacing(0.5),
+    [theme.breakpoints.down("xs")]: {
+      width: 185,
+      fontSize: 14
+    }
   },
   or: {
     width: "100%",
     textAlign: "center",
     fontSize: 20,
+    [theme.breakpoints.down("xs")]: {
+      fontSize: 14
+    }
   },
   errors: {
-    margin: theme.spacing(1),
-  },
+    margin: theme.spacing(2),
+    width: 320,
+    [theme.breakpoints.down("xs")]: {
+      fontSize: 12,
+      width: 200
+    }
+  }
 }));
 
 function Signup() {
   const classes = useStyles();
   const history = useHistory("");
+  const fieldSize = useMediaQuery(theme.breakpoints.down("xs"));
   const [payload, setPayload] = useState({
     email: "",
     password: "",
     confirmPassword: "",
     showPassword: false,
     showConfirmPassword: false,
-    errors: "",
+    errors: ""
   });
 
   const handleChange = (prop) => (event) => {
@@ -85,7 +101,7 @@ function Signup() {
   const handleClickShowConfirmPassword = () => {
     setPayload({
       ...payload,
-      showConfirmPassword: !payload.showConfirmPassword,
+      showConfirmPassword: !payload.showConfirmPassword
     });
   };
 
@@ -99,7 +115,7 @@ function Signup() {
     } else if (payload.password.length <= 5) {
       setPayload({
         ...payload,
-        errors: "Password should be at least 6 characters",
+        errors: "Password should be at least 6 characters"
       });
     } else {
       setPayload({ ...payload, errors: "" });
@@ -133,22 +149,18 @@ function Signup() {
   };
   return (
     <Paper className={classes.root}>
+      {payload.errors ? (
+        <Alert severity="error" className={classes.errors}>
+          {payload.errors}
+        </Alert>
+      ) : (
+        ""
+      )}
       <Card elevation={10} className={classes.card}>
         <form className={classes.form}>
-          <Typography
-            className={classes.field}
-            variant="h4"
-            color="textPrimary"
-          >
+          <Typography variant="h4" color="textPrimary">
             Signup
           </Typography>
-          {payload.errors ? (
-            <Alert severity="error" className={classes.errors}>
-              {payload.errors}
-            </Alert>
-          ) : (
-            ""
-          )}
 
           <TextField
             className={classes.field}
@@ -156,8 +168,13 @@ function Signup() {
             onChange={handleChange("email")}
             label="Email"
             variant="outlined"
+            size={fieldSize ? "small" : "medium"}
           />
-          <FormControl className={classes.field} variant="outlined">
+          <FormControl
+            className={classes.field}
+            size={fieldSize ? "small" : "medium"}
+            variant="outlined"
+          >
             <InputLabel htmlFor="outlined-adornment-password">
               Password
             </InputLabel>
@@ -181,7 +198,11 @@ function Signup() {
               labelWidth={70}
             />
           </FormControl>
-          <FormControl className={classes.field} variant="outlined">
+          <FormControl
+            className={classes.field}
+            size={fieldSize ? "small" : "medium"}
+            variant="outlined"
+          >
             <InputLabel htmlFor="outlined-adornment-confirmPassword">
               Confirm password
             </InputLabel>
@@ -214,6 +235,7 @@ function Signup() {
             className={classes.field}
             variant="contained"
             color="primary"
+            size={fieldSize ? "small" : "large"}
           >
             REGISTER
           </Button>
@@ -223,6 +245,7 @@ function Signup() {
             className={classes.field}
             variant="contained"
             color="default"
+            size={fieldSize ? "small" : "large"}
           >
             Already have an account? LOGIN
           </Button>
