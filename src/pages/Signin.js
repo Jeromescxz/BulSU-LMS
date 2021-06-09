@@ -7,7 +7,6 @@ import {
   makeStyles,
   Card,
   TextField,
-  Paper,
   FormControl,
   InputLabel,
   OutlinedInput,
@@ -24,6 +23,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    margin: 0,
     height: "100vh",
     display: "flex",
     alignItems: "center",
@@ -111,7 +111,7 @@ function Signin() {
     }
   };
   return (
-    <Paper className={classes.root}>
+    <div className={classes.root}>
       {values.errors ? (
         <Alert severity="error" className={classes.errors}>
           {values.errors}
@@ -179,7 +179,7 @@ function Signin() {
           </Button>
         </form>
       </Card>
-    </Paper>
+    </div>
   );
 }
 

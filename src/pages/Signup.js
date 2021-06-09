@@ -149,7 +149,7 @@ function Signup() {
     }
   };
   return (
-    <Paper className={classes.root}>
+    <div className={classes.root}>
       {payload.errors ? (
         <Alert severity="error" className={classes.errors}>
           {payload.errors}
@@ -252,7 +252,7 @@ function Signup() {
           </Button>
         </form>
       </Card>
-    </Paper>
+    </div>
   );
 }
 
