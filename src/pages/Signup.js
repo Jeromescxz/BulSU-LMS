@@ -23,6 +23,7 @@ import VisibilityOff from "@material-ui/icons/VisibilityOff";
 
 var useStyles = makeStyles((theme) => ({
   root: {
+    margin: 0,
     height: "100vh",
     display: "flex",
     alignItems: "center",
