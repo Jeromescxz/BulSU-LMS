@@ -50,7 +50,8 @@ const useStyles = makeStyles((theme) => ({
     borderRadius: 10,
     border: "2px solid black",
     [theme.breakpoints.down("xs")]: {
-      width: 200
+      width: 200,
+      border: "none"
     }
   },
 

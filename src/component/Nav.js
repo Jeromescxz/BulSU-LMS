@@ -19,6 +19,7 @@ import firebase from "../utils/firebase";
 import MenuIcon from "@material-ui/icons/Menu";
 import HomeIcon from "@material-ui/icons/Home";
 import ExitToApp from "@material-ui/icons/ExitToApp";
+import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: 0
@@ -30,16 +31,30 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "white"
   },
   signout: {
-    marginTop: 30,
-    "&:hover": {
-      background: "#ff8178"
-    }
+    marginTop: 30
   },
   listitem: {
     marginTop: 8
   },
   navText: {
     color: theme.palette.primary.main
+  },
+  boxNavi: {
+    height: "100vh",
+    width: "220px",
+    [theme.breakpoints.down("xs")]: {
+      width: "100vw",
+      display: "flex",
+      justifyContent: "center"
+    }
+  },
+  titleNav: {
+    alignContent: "flex-start"
+  },
+  back: {
+    [theme.breakpoints.up("sm")]: {
+      display: "none"
+    }
   }
 }));
 
@@ -79,14 +94,26 @@ function Nav() {
               setOpen(true);
             }}
           >
-            <Box height="100vh" width="200px">
+            <Typography color="primary" variant="h5">
+              <Box
+                className={classes.titleNav}
+                fontWeight="fontWeightMedium"
+                fontStyle="italic"
+                m={1}
+              >
+                <IconButton
+                  className={classes.back}
+                  color="primary"
+                  onClick={() => setOpen(false)}
+                >
+                  <KeyboardBackspace />
+                </IconButton>
+                BulSU FLEX
+              </Box>
+            </Typography>
+            <Divider />
+            <Box className={classes.boxNavi}>
               <List className={classes.drawer}>
-                <Typography color="primary" variant="h5">
-                  <Box fontWeight="fontWeightMedium" fontStyle="italic" m={1}>
-                    BulSU FLEX
-                  </Box>
-                </Typography>
-                <Divider />
                 <ListItem
                   className={classes.listitem}
                   button
