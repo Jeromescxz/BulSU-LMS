@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     height: 550,
     width: 300,
     position: "fixed",
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       display: "none"
     }
   },
@@ -48,7 +48,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Home() {
   const classes = useStyles();
-  const bp = useMediaQuery(theme.breakpoints.down("xs"));
+  const bp = useMediaQuery(theme.breakpoints.down("sm"));
   return (
     <div className={classes.root}>
       <Nav />
