@@ -22,7 +22,8 @@ import ExitToApp from "@material-ui/icons/ExitToApp";
 import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: 0
+    margin: 0,
+    width: "100vw"
   },
   drawer: {
     color: "white"
@@ -75,7 +76,7 @@ function Nav() {
   const classes = useStyles();
   return (
     <div className={classes.root}>
-      <AppBar position="sticky" className={classes.appbar} elevation={0}>
+      <AppBar className={classes.appbar} position="fixed" elevation={0}>
         <Toolbar>
           <IconButton color="primary" onClick={() => setOpen(true)}>
             <MenuIcon />
@@ -136,8 +137,8 @@ function Nav() {
             </Box>
           </SwipeableDrawer>
         </Toolbar>
+        <Divider />
       </AppBar>
-      <Divider />
     </div>
   );
 }
