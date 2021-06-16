@@ -71,7 +71,8 @@ const useStyles = makeStyles((theme) => ({
   paper: {
     maxWidth: 1000,
     margin: "auto",
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    alignItems: "center"
   },
   textPostIcon: {
     textAlign: "center",
@@ -123,7 +124,7 @@ function Home() {
             <Box>Post</Box>
           </Box>
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} justify="center">
           <Grid item xs={1.5}>
             <Card className={classes.post}>
               <CardMedia className={classes.media} image={logo} />
