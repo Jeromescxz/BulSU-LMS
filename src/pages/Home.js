@@ -16,10 +16,10 @@ import {
 import logo from "../image/Myprofile.jpg";
 const useStyles = makeStyles((theme) => ({
   root: {
-    margin: 0
+    margin: 0,
+    paddingTop: 55
   },
   paper: {
-    marginTop: 70,
     maxWidth: 1000,
     margin: "auto",
     padding: theme.spacing(2),
@@ -82,11 +82,7 @@ function Home() {
           <Grid item xs={bp ? 12 : 8}>
             <Card className={classes.post}>
               <CardHeader
-                avatar={
-                  <Avatar aria-label="recipe" className={classes.avatar}>
-                    J
-                  </Avatar>
-                }
+                avatar={<Avatar className={classes.avatar}>J</Avatar>}
                 title="Jerome Hipolito"
                 subheader="June 15, 2021"
               />
