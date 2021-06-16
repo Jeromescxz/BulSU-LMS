@@ -30,7 +30,7 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "row",
     textAlign: "center"
   },
-  name: {},
+  name: { marginBottom: theme.spacing(2) },
   details: {
     marginLeft: 20,
     display: "flex",
@@ -58,8 +58,8 @@ const useStyles = makeStyles((theme) => ({
     height: 200,
     width: 200,
     [theme.breakpoints.down("xs")]: {
-      height: 150,
-      width: 150
+      height: 120,
+      width: 120
     }
   },
   postList: {
