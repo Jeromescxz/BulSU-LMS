@@ -17,6 +17,7 @@ import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
 // icons
 import MenuIcon from "@material-ui/icons/Menu";
+import AccountBox from "@material-ui/icons/AccountBox";
 import HomeIcon from "@material-ui/icons/Home";
 import ExitToApp from "@material-ui/icons/ExitToApp";
 import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
@@ -83,7 +84,7 @@ function Nav() {
           </IconButton>
           <Typography color="primary" variant="h5">
             <Box fontWeight="fontWeightMedium" fontStyle="italic" m={1}>
-              BulSU FLEX
+              Social Medyas
             </Box>
           </Typography>
 
@@ -109,7 +110,7 @@ function Nav() {
                 >
                   <KeyboardBackspace />
                 </IconButton>
-                BulSU FLEX
+                Social Medyas
               </Box>
             </Typography>
             <Divider />
@@ -122,6 +123,17 @@ function Nav() {
                 >
                   <HomeIcon color="action" />
                   <ListItemText className={classes.navText} primary={"Home"} />
+                </ListItem>
+                <ListItem
+                  className={classes.listitem}
+                  button
+                  onClick={() => history.push("/profile")}
+                >
+                  <AccountBox color="action" />
+                  <ListItemText
+                    className={classes.navText}
+                    primary={"Profile"}
+                  />
                 </ListItem>
 
                 <div className={classes.signout}>

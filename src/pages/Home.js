@@ -22,14 +22,27 @@ const useStyles = makeStyles((theme) => ({
     marginTop: 70,
     maxWidth: 1000,
     margin: "auto",
-    padding: theme.spacing(2)
+    padding: theme.spacing(2),
+    [theme.breakpoints.down("xs")]: {
+      padding: 0
+    }
   },
-  post: {},
+  post: {
+    [theme.breakpoints.down("xs")]: {
+      width: "100%",
+      height: "100%",
+      margin: 0
+    }
+  },
   friends: {
     height: 550,
     width: 300,
     position: "fixed",
     [theme.breakpoints.down("sm")]: {
+      height: 400,
+      width: 200
+    },
+    [theme.breakpoints.down("xs")]: {
       display: "none"
     }
   },
@@ -48,7 +61,7 @@ const useStyles = makeStyles((theme) => ({
 
 function Home() {
   const classes = useStyles();
-  const bp = useMediaQuery(theme.breakpoints.down("sm"));
+  const bp = useMediaQuery(theme.breakpoints.down("xs"));
   return (
     <div className={classes.root}>
       <Nav />
