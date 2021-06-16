@@ -58,8 +58,8 @@ const useStyles = makeStyles((theme) => ({
     height: 200,
     width: 200,
     [theme.breakpoints.down("xs")]: {
-      height: 120,
-      width: 120
+      height: 135,
+      width: 135
     }
   },
   postList: {
