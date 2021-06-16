@@ -29,9 +29,8 @@ const useStyles = makeStyles((theme) => ({
   },
   post: {
     [theme.breakpoints.down("xs")]: {
-      width: "100%",
-      height: "100%",
-      margin: 0
+      margin: 0,
+      borderBottom: "1px solid grey"
     }
   },
   friends: {
@@ -80,7 +79,7 @@ function Home() {
             </Card>
           </Grid>
           <Grid item xs={bp ? 12 : 8}>
-            <Card className={classes.post}>
+            <Card className={classes.post} elevation={bp ? 0 : 2}>
               <CardHeader
                 avatar={<Avatar className={classes.avatar}>J</Avatar>}
                 title="Jerome Hipolito"
@@ -92,7 +91,7 @@ function Home() {
                 title="Paella dish"
               />
               <CardContent>
-                <Typography gutterBottom variant="body1">
+                <Typography gutterBottom variant="body2">
                   <Box fontWeight={600}>999999 likes</Box>
                 </Typography>
                 <Typography

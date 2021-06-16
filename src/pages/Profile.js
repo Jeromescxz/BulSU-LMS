@@ -62,9 +62,7 @@ const useStyles = makeStyles((theme) => ({
       width: 135
     }
   },
-  postList: {
-    flexDirection: "row"
-  },
+
   postlogo: {
     marginTop: theme.spacing(2)
   },
@@ -76,7 +74,10 @@ const useStyles = makeStyles((theme) => ({
   },
   textPostIcon: {
     textAlign: "center",
-    marginBottom: theme.spacing(1)
+    marginBottom: theme.spacing(3),
+    [theme.breakpoints.down("xs")]: {
+      marginBottom: theme.spacing(1)
+    }
   }
 }));
 
@@ -124,7 +125,7 @@ function Home() {
             <Box>Post</Box>
           </Box>
         </Typography>
-        <Grid container spacing={2} justify="center">
+        <Grid container spacing={bp ? 2 : 4} justify="center">
           <Grid item xs={1.5}>
             <Card className={classes.post}>
               <CardMedia className={classes.media} image={logo} />
