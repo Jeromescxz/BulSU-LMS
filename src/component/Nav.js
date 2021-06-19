@@ -11,16 +11,20 @@ import {
   Divider,
   Typography,
   AppBar,
-  Toolbar
+  Toolbar,
+  Grid
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
+import CreatePost from "../modals/CreatePost";
 // icons
 import MenuIcon from "@material-ui/icons/Menu";
 import AccountBox from "@material-ui/icons/AccountBox";
 import HomeIcon from "@material-ui/icons/Home";
 import ExitToApp from "@material-ui/icons/ExitToApp";
 import KeyboardBackspace from "@material-ui/icons/KeyboardBackspace";
+import Add from "@material-ui/icons/Add";
+
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: 0,
@@ -57,7 +61,12 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.up("sm")]: {
       display: "none"
     }
-  }
+  },
+  NavRightSide: {
+    display: "flex",
+    justifyContent: "flex-end"
+  },
+  grid: {}
 }));
 
 const signout = () => {
@@ -75,6 +84,7 @@ function Nav() {
   const [open, setOpen] = useState(false);
   const history = useHistory("");
   const classes = useStyles();
+  const [openCreatePost, setOpenCreatePost] = useState(false);
   return (
     <div className={classes.root}>
       <AppBar className={classes.appbar} position="fixed" elevation={0}>
@@ -82,12 +92,35 @@ function Nav() {
           <IconButton color="primary" onClick={() => setOpen(true)}>
             <MenuIcon />
           </IconButton>
-          <Typography color="primary" variant="h5">
-            <Box fontWeight="fontWeightMedium" fontStyle="italic" m={1}>
-              Social Medyas
-            </Box>
-          </Typography>
-
+          <Grid
+            container
+            direction="row"
+            justify="flex-start"
+            alignItems="center"
+            alignContent="center"
+            className={classes.grid}
+          >
+            <Grid item xs={8}></Grid>
+            <Grid item xs={8}>
+              <Typography color="primary" variant="h5">
+                <Box fontWeight="fontWeightMedium" fontStyle="italic" m={1}>
+                  Social Medyas
+                </Box>
+              </Typography>
+            </Grid>
+            <Grid item xs={4}>
+              <Box className={classes.NavRightSide}>
+                <IconButton
+                  className={classes.add}
+                  color="primary"
+                  onClick={() => setOpenCreatePost(true)}
+                  size="small"
+                >
+                  <Add />
+                </IconButton>
+              </Box>
+            </Grid>
+          </Grid>
           <SwipeableDrawer
             anchor="left"
             open={open}
@@ -151,6 +184,7 @@ function Nav() {
         </Toolbar>
         <Divider />
       </AppBar>
+      <CreatePost open={openCreatePost} setOpen={setOpenCreatePost} />
     </div>
   );
 }
