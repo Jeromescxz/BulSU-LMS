@@ -62,25 +62,44 @@ const db = firebase.firestore();
 function Home() {
   const classes = useStyles();
   const bp = useMediaQuery(theme.breakpoints.down("xs"));
-  const [post, setPost] = useState([]);
+  const [post, setPost] = useState({
+    currentUID: "",
+    posted: []
+  });
 
   useEffect(() => {
-    const currentUser = firebase.auth().currentUser;
+    const fetchData = () => {
+      const currentUser = firebase.auth().currentUser;
+      db.collection("users")
+        .doc(currentUser.uid)
+        .onSnapshot((doc) => {
+          //success
+          if (doc.exists) {
+            let postDoc = doc.data();
+            setPost({
+              currentUID: currentUser.uid
+            });
+            fetchPosted();
+          } else {
+            //
+          }
+        });
+    };
     const fetchPosted = () => {
+      const currentUser = firebase.auth().currentUser;
       db.collection("users")
         .doc(currentUser.uid)
         .collection("post")
         .onSnapshot((doc) => {
-          let postlist = [];
+          let postedlist = [];
           doc.forEach((posted) => {
-            postlist.push(posted.doc());
+            postedlist.push(posted.doc());
           });
-          setPost(postlist);
         });
     };
-    fetchPosted();
+    fetchData();
   }, []);
-  console.log(post.caption);
+
   return (
     <div className={classes.root}>
       <Nav currentUID={post.currentUID} />
