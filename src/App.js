@@ -31,6 +31,7 @@ function App() {
     isAuth: false,
     isLoading: true
   });
+
   useEffect(() => {
     firebase.auth().onAuthStateChanged(function (user) {
       if (user) {

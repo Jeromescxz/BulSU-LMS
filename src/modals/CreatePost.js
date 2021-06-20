@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   makeStyles,
   Fade,
@@ -63,8 +63,8 @@ export default function CreatePost({ open, setOpen }) {
   };
 
   const posted = (event) => {
-    event.preventDefault();
     setPost({ uploadDate: Date.now() });
+    event.preventDefault();
     console.log(post);
   };
 
@@ -95,12 +95,7 @@ export default function CreatePost({ open, setOpen }) {
             />
             <Button component="label">
               <Image color="inherit" />
-              <input
-                type="file"
-                onChange={onFileChange}
-                accept="image/*"
-                hidden
-              />
+              <input type="file" onChange={onFileChange} accept="image/*" />
             </Button>
             <Button onClick={posted} color="primary" variant="contained">
               Post

@@ -80,7 +80,7 @@ const signout = () => {
       // An error happened.
     });
 };
-function Nav() {
+function Nav({ currentUID }) {
   const [open, setOpen] = useState(false);
   const history = useHistory("");
   const classes = useStyles();

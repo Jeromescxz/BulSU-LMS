@@ -1,5 +1,5 @@
 import Nav from "../component/Nav";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import theme from "../utils/theme";
 import {
   makeStyles,
@@ -15,7 +15,6 @@ import {
   useMediaQuery
 } from "@material-ui/core";
 import firebase from "../utils/firebase";
-import logo from "../image/Myprofile.jpg";
 const useStyles = makeStyles((theme) => ({
   root: {
     margin: 0,
@@ -63,16 +62,28 @@ const db = firebase.firestore();
 function Home() {
   const classes = useStyles();
   const bp = useMediaQuery(theme.breakpoints.down("xs"));
+  const [post, setPost] = useState([]);
 
   useEffect(() => {
-    const fetchData = () => {
-      const currentUser = firebase.auth().currentUser;
+    const currentUser = firebase.auth().currentUser;
+    const fetchPosted = () => {
+      db.collection("users")
+        .doc(currentUser.uid)
+        .collection("post")
+        .onSnapshot((doc) => {
+          let postlist = [];
+          doc.forEach((posted) => {
+            postlist.push(posted.doc());
+          });
+          setPost(postlist);
+        });
     };
+    fetchPosted();
   }, []);
-
+  console.log(post.caption);
   return (
     <div className={classes.root}>
-      <Nav />
+      <Nav currentUID={post.currentUID} />
       <Paper className={classes.paper} elevation={0}>
         <Grid container spacing={2}>
           <Grid item xs={4}>
@@ -92,11 +103,11 @@ function Home() {
               <CardHeader
                 avatar={<Avatar className={classes.avatar}>J</Avatar>}
                 title="Jerome Hipolito"
-                subheader="June 15, 2021"
+                subheader={post.uploadDate}
               />
               <CardMedia
                 className={classes.media}
-                image={logo}
+                image={post.imageURL}
                 title="Paella dish"
               />
               <CardContent>
@@ -112,7 +123,7 @@ function Home() {
                   <Box fontWeight={600} m={0.3}>
                     Jerome Hipolito
                   </Box>
-                  <Box m={0.3}>Napaka gwapo ko naman</Box>
+                  <Box m={0.3}>{post.caption}</Box>
                 </Typography>
               </CardContent>
             </Card>
