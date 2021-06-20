@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   makeStyles,
   Fade,
@@ -9,6 +9,7 @@ import {
   InputBase,
   Button
 } from "@material-ui/core";
+import firebase from "../utils/firebase";
 //icons
 import Image from "@material-ui/icons/Image";
 
@@ -41,15 +42,30 @@ export default function CreatePost({ open, setOpen }) {
   const classes = useStyles();
   const [post, setPost] = useState({
     caption: "",
-    image: ""
+    uploadDate: "",
+    imageURL: ""
   });
+
   const handleChange = (prop) => (event) => {
     setPost({ ...post, [prop]: event.target.value });
-    console.log(event.target.value);
+  };
+
+  const onFileChange = async (event) => {
+    const file = event.target.files[0];
+    var storageRef = firebase.storage().ref();
+    var fileRef = storageRef.child(file.name);
+    await fileRef.put(file);
+    setPost({ imageURL: await fileRef.getDownloadURL() });
   };
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const posted = (event) => {
+    event.preventDefault();
+    setPost({ uploadDate: Date.now() });
+    console.log(post);
   };
 
   return (
@@ -81,12 +97,12 @@ export default function CreatePost({ open, setOpen }) {
               <Image color="inherit" />
               <input
                 type="file"
-                onChange={handleChange("image")}
+                onChange={onFileChange}
                 accept="image/*"
                 hidden
               />
             </Button>
-            <Button color="primary" variant="contained">
+            <Button onClick={posted} color="primary" variant="contained">
               Post
             </Button>
           </div>

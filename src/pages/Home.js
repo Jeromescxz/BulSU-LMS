@@ -1,4 +1,5 @@
 import Nav from "../component/Nav";
+import React, { useEffect } from "react";
 import theme from "../utils/theme";
 import {
   makeStyles,
@@ -13,6 +14,7 @@ import {
   Box,
   useMediaQuery
 } from "@material-ui/core";
+import firebase from "../utils/firebase";
 import logo from "../image/Myprofile.jpg";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -57,10 +59,17 @@ const useStyles = makeStyles((theme) => ({
     }
   }
 }));
-
+const db = firebase.firestore();
 function Home() {
   const classes = useStyles();
   const bp = useMediaQuery(theme.breakpoints.down("xs"));
+
+  useEffect(() => {
+    const fetchData = () => {
+      const currentUser = firebase.auth().currentUser;
+    };
+  }, []);
+
   return (
     <div className={classes.root}>
       <Nav />
