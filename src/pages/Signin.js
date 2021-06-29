@@ -3,14 +3,14 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
 import theme from "../utils/theme";
-import StyledFirebaseAuth from "react-firebaseui/StyledFirebaseAuth";
+
 import {
   makeStyles,
   Card,
   TextField,
   FormControl,
   InputLabel,
-  OutlinedInput,
+  Input,
   InputAdornment,
   IconButton,
   Typography,
@@ -21,14 +21,6 @@ import { Alert } from "@material-ui/lab";
 //icons
 import Visibility from "@material-ui/icons/Visibility";
 import VisibilityOff from "@material-ui/icons/VisibilityOff";
-
-const uiConfig = {
-  // Popup signin flow rather than redirect flow.
-  signInFlow: "popup",
-  // Redirect to /signedIn after sign in is successful. Alternatively you can provide a callbacks.signInSuccess function.
-  // We will display Google and Facebook as auth providers.
-  signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID]
-};
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -48,20 +40,23 @@ const useStyles = makeStyles((theme) => ({
     width: "320px",
     padding: 20,
     borderRadius: 10,
-    border: "2px solid black",
+
     [theme.breakpoints.down("xs")]: {
-      width: 200,
-      border: "none"
+      width: 200
     }
   },
 
   field: {
     margin: theme.spacing(1),
+    marginBottom: theme.spacing(3),
     [theme.breakpoints.down("xs")]: {
       height: 30,
       width: 185,
       fontSize: 14
     }
+  },
+  button: {
+    margin: theme.spacing(0.5)
   },
   errors: {
     margin: theme.spacing(2),
@@ -140,18 +135,18 @@ function Signin() {
             value={values.email}
             onChange={handleChange("email")}
             label="Email@email.com"
-            variant="outlined"
+            variant="standard"
             size={fieldSize ? "small" : "medium"}
           />
           <FormControl
             className={classes.field}
-            variant="outlined"
+            variant="standard"
             size={fieldSize ? "small" : "medium"}
           >
             <InputLabel htmlFor="outlined-adornment-password">
               Password
             </InputLabel>
-            <OutlinedInput
+            <Input
               id="outlined-adornment-password"
               type={values.showPassword ? "text" : "password"}
               value={values.password}
@@ -173,7 +168,7 @@ function Signin() {
           </FormControl>
           <Button
             onClick={login}
-            className={classes.field}
+            className={classes.button}
             variant="contained"
             color="primary"
           >
@@ -182,16 +177,12 @@ function Signin() {
 
           <Button
             onClick={() => history.push("/Signup")}
-            className={classes.field}
+            className={classes.button}
             variant="contained"
             color="default"
           >
             SIGNUP
           </Button>
-          <StyledFirebaseAuth
-            uiConfig={uiConfig}
-            firebaseAuth={firebase.auth()}
-          />
         </form>
       </Card>
     </div>

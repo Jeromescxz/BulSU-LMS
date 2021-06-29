@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+
 import {
   makeStyles,
   Fade,
@@ -10,6 +11,7 @@ import {
   Button
 } from "@material-ui/core";
 import firebase from "../utils/firebase";
+
 //icons
 import Image from "@material-ui/icons/Image";
 
@@ -37,35 +39,61 @@ const useStyles = makeStyles((theme) => ({
     display: "none"
   }
 }));
+const db = firebase.firestore();
 
-export default function CreatePost({ open, setOpen }) {
+export default function CreatePost({ open, setOpen, useruid }) {
   const classes = useStyles();
-  const [post, setPost] = useState({
-    caption: "",
-    uploadDate: "",
-    imageURL: ""
+  const [state, setState] = useState({
+    caption: ""
   });
+  const [imageURL, setImageURL] = useState("");
 
   const handleChange = (prop) => (event) => {
-    setPost({ ...post, [prop]: event.target.value });
+    setState({ ...state, [prop]: event.target.value });
   };
-
   const onFileChange = async (event) => {
     const file = event.target.files[0];
     var storageRef = firebase.storage().ref();
     var fileRef = storageRef.child(file.name);
     await fileRef.put(file);
-    setPost({ imageURL: await fileRef.getDownloadURL() });
+    setImageURL(await fileRef.getDownloadURL());
   };
 
   const handleClose = () => {
     setOpen(false);
   };
+  const posted = (e) => {
+    e.preventDefault();
+    if (imageURL === "") {
+      alert("add image");
+    } else {
+      const batch = db.batch();
+      const postRef = db
+        .collection("users")
+        .doc(useruid)
+        .collection("post")
+        .doc();
+      batch.set(postRef, {
+        caption: state.caption,
+        image_url: imageURL,
+        posted_date: new Date()
+      });
 
-  const posted = (event) => {
-    setPost({ uploadDate: Date.now() });
-    event.preventDefault();
-    console.log(post);
+      let postNumberRef = db.collection("users").doc(useruid);
+      batch.update(postNumberRef, {
+        post_number: firebase.firestore.FieldValue.increment(1)
+      });
+
+      batch
+        .commit()
+        .then(() => {
+          setImageURL("");
+          handleClose();
+        })
+        .catch((error) => {
+          //err
+        });
+    }
   };
 
   return (
@@ -85,17 +113,22 @@ export default function CreatePost({ open, setOpen }) {
             <Typography variant="h5">
               <Box>Create a post</Box>
             </Typography>
+
             <InputBase
               className={classes.caption}
               onChange={handleChange("caption")}
-              id="filled-textarea"
               placeholder="Write a post"
               rows={5}
               multiline
             />
             <Button component="label">
               <Image color="inherit" />
-              <input type="file" onChange={onFileChange} accept="image/*" />
+              <input
+                type="file"
+                onChange={onFileChange}
+                accept="image/*"
+                required
+              />
             </Button>
             <Button onClick={posted} color="primary" variant="contained">
               Post

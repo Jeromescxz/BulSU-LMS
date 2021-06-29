@@ -1,5 +1,4 @@
 import { React, useState } from "react";
-import { makeStyles } from "@material-ui/core/styles";
 import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
 import theme from "../utils/theme";
@@ -8,11 +7,13 @@ import {
   TextField,
   FormControl,
   InputLabel,
-  OutlinedInput,
+  Input,
   InputAdornment,
   IconButton,
   Typography,
   Button,
+  Box,
+  makeStyles,
   useMediaQuery
 } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
@@ -35,31 +36,39 @@ var useStyles = makeStyles((theme) => ({
     flexDirection: "column"
   },
   card: {
-    width: "320px",
+    width: 400,
     padding: 20,
     borderRadius: 10,
-    border: "2px solid black",
+
     [theme.breakpoints.down("xs")]: {
       width: 200,
-      border: "none"
+      background: "none"
+    }
+  },
+  field: {
+    margin: theme.spacing(1),
+    [theme.breakpoints.down("xs")]: {
+      height: 30,
+      width: 185,
+      fontSize: 14,
+      margin: theme.spacing(1)
+    }
+  },
+  button: {
+    marginTop: theme.spacing(2)
+  },
+  grid: {
+    display: "flex",
+    alignItems: "center"
+  },
+  name: {
+    display: "flex",
+    flexDirection: "row",
+    [theme.breakpoints.down("xs")]: {
+      flexDirection: "column"
     }
   },
 
-  field: {
-    margin: theme.spacing(0.5),
-    [theme.breakpoints.down("xs")]: {
-      width: 185,
-      fontSize: 14
-    }
-  },
-  or: {
-    width: "100%",
-    textAlign: "center",
-    fontSize: 20,
-    [theme.breakpoints.down("xs")]: {
-      fontSize: 14
-    }
-  },
   errors: {
     margin: theme.spacing(2),
     width: 320,
@@ -67,8 +76,12 @@ var useStyles = makeStyles((theme) => ({
       fontSize: 12,
       width: 200
     }
+  },
+  welcome: {
+    color: "white"
   }
 }));
+const db = firebase.firestore();
 
 function Signup() {
   const classes = useStyles();
@@ -78,6 +91,8 @@ function Signup() {
     email: "",
     password: "",
     confirmPassword: "",
+    LastName: "",
+    FirstName: "",
     showPassword: false,
     showConfirmPassword: false,
     errors: ""
@@ -118,21 +133,31 @@ function Signup() {
         errors: "Password should be at least 6 characters"
       });
     } else {
-      setPayload({ ...payload, errors: "" });
       firebase
         .auth()
         .createUserWithEmailAndPassword(payload.email, payload.password)
         .then((userCredential) => {
-          alert("You have sign up successfully");
-          firebase
-            .auth()
-            .signOut()
+          const batch = db.batch();
+          const currentuser = firebase.auth().currentUser;
+          const registerRef = db.collection("users").doc(currentuser.uid);
+          batch.set(registerRef, {
+            email: payload.email,
+            first_name: payload.FirstName,
+            last_name: payload.LastName,
+            profile_url: "",
+            post_number: 0,
+            friends_number: 0,
+            created_at: new Date()
+          });
+          batch
+            .commit()
             .then(() => {
-              // Sign-out successful.
+              alert("You have sign up successfully");
             })
             .catch((error) => {
-              // An error happened.
+              //err
             });
+
           // Signed in
 
           // var user = userCredential.email;
@@ -143,7 +168,10 @@ function Signup() {
           // var errorCode = error.code;
           var errorMessage = error.message;
           // ..
-          setPayload({ ...payload, errors: errorMessage });
+          setPayload({
+            ...payload,
+            errors: errorMessage
+          });
         });
     }
   };
@@ -157,29 +185,44 @@ function Signup() {
         ""
       )}
       <Card elevation={10} className={classes.card}>
+        <Typography variant="h4">Welcome</Typography>
         <form className={classes.form}>
-          <Typography variant="h4" color="textPrimary">
-            Signup
-          </Typography>
-
+          <Box className={classes.name}>
+            <TextField
+              className={classes.field}
+              id="FirstName"
+              onChange={handleChange("FirstName")}
+              label="First name"
+              variant="standard"
+              size={fieldSize ? "small" : "medium"}
+            />
+            <TextField
+              className={classes.field}
+              id="LastName"
+              onChange={handleChange("LastName")}
+              label="Last name"
+              variant="standard"
+              size={fieldSize ? "small" : "medium"}
+            />
+          </Box>
           <TextField
             className={classes.field}
             id="Email"
             onChange={handleChange("email")}
             label="Email"
-            variant="outlined"
+            variant="standard"
             size={fieldSize ? "small" : "medium"}
           />
           <FormControl
             className={classes.field}
+            variant="standard"
             size={fieldSize ? "small" : "medium"}
-            variant="outlined"
           >
-            <InputLabel htmlFor="outlined-adornment-password">
+            <InputLabel htmlFor="standard-adornment-password">
               Password
             </InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-password"
+            <Input
+              id="standard-adornment-password"
               type={payload.showPassword ? "text" : "password"}
               value={payload.password}
               onChange={handleChange("password")}
@@ -199,15 +242,15 @@ function Signup() {
             />
           </FormControl>
           <FormControl
-            className={classes.field}
             size={fieldSize ? "small" : "medium"}
-            variant="outlined"
+            className={classes.field}
+            variant="standard"
           >
-            <InputLabel htmlFor="outlined-adornment-confirmPassword">
+            <InputLabel htmlFor="standard-adornment-confirmPassword">
               Confirm password
             </InputLabel>
-            <OutlinedInput
-              id="outlined-adornment-confirmPassword"
+            <Input
+              id="standard-adornment-confirmPassword"
               type={payload.showConfirmPassword ? "text" : "password"}
               value={payload.confirmPassword}
               onChange={handleChange("confirmPassword")}
@@ -232,22 +275,20 @@ function Signup() {
           </FormControl>
           <Button
             onClick={register}
-            className={classes.field}
+            className={classes.button}
             variant="contained"
             color="primary"
-            size={fieldSize ? "small" : "large"}
           >
             REGISTER
           </Button>
-          <Typography className={classes.or}>OR</Typography>
+
           <Button
             onClick={() => history.push("/signin")}
-            className={classes.field}
+            className={classes.button}
             variant="contained"
             color="default"
-            size={fieldSize ? "small" : "large"}
           >
-            Already have an account? LOGIN
+            Have an account?
           </Button>
         </form>
       </Card>

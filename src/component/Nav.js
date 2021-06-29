@@ -80,7 +80,7 @@ const signout = () => {
       // An error happened.
     });
 };
-function Nav({ currentUID }) {
+function Nav({ useruid }) {
   const [open, setOpen] = useState(false);
   const history = useHistory("");
   const classes = useStyles();
@@ -184,7 +184,11 @@ function Nav({ currentUID }) {
         </Toolbar>
         <Divider />
       </AppBar>
-      <CreatePost open={openCreatePost} setOpen={setOpenCreatePost} />
+      <CreatePost
+        useruid={useruid}
+        open={openCreatePost}
+        setOpen={setOpenCreatePost}
+      />
     </div>
   );
 }

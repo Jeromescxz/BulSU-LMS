@@ -1,154 +1,172 @@
+import React, { useState, useEffect } from "react";
 import Nav from "../component/Nav";
-import React, { useEffect, useState } from "react";
+import firebase from "../utils/firebase";
+import moment from "moment";
 import theme from "../utils/theme";
 import {
-  makeStyles,
-  Paper,
   Grid,
+  makeStyles,
   Card,
-  CardHeader,
-  Avatar,
+  CardActionArea,
   CardMedia,
   CardContent,
   Typography,
-  Box,
+  CardActions,
+  Button,
+  IconButton,
+  CardHeader,
+  Avatar,
   useMediaQuery
 } from "@material-ui/core";
-import firebase from "../utils/firebase";
-const useStyles = makeStyles((theme) => ({
+import MoreVertIcon from "@material-ui/icons/MoreVert";
+import FavoriteIcon from "@material-ui/icons/Favorite";
+var useStyles = makeStyles((theme) => ({
   root: {
-    margin: 0,
-    paddingTop: 55
+    marginTop: 100,
+    width: "100vw",
+    height: "100vh",
+    display: "flex",
+    justifyContent: "center"
   },
-  paper: {
-    maxWidth: 1000,
-    margin: "auto",
-    padding: theme.spacing(2),
-    [theme.breakpoints.down("xs")]: {
-      padding: 0
-    }
+  container: {
+    width: 1000
   },
-  post: {
-    [theme.breakpoints.down("xs")]: {
-      margin: 0,
-      borderBottom: "1px solid grey"
-    }
-  },
-  friends: {
-    height: 550,
-    width: 300,
-    position: "fixed",
-    [theme.breakpoints.down("sm")]: {
-      height: 400,
-      width: 200
-    },
-    [theme.breakpoints.down("xs")]: {
-      display: "none"
-    }
-  },
+
   media: {
     height: 0,
     paddingTop: "100%" // 16:9
   },
-  caption: {
+  friendsList: {
+    width: 300,
+    position: "fixed",
+    [theme.breakpoints.down("sm")]: {
+      width: 200
+    }
+  },
+  friends: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
+    margin: theme.spacing(1)
+  },
+  card: {
+    border: "0.5px solid gray",
+    marginBottom: 20,
+    width: "100%"
+  },
+  firstgrid: {
     [theme.breakpoints.down("xs")]: {
-      flexDirection: "column"
+      display: "none"
     }
   }
 }));
+
 const db = firebase.firestore();
 function Home() {
   const classes = useStyles();
   const bp = useMediaQuery(theme.breakpoints.down("xs"));
-  const [post, setPost] = useState({
-    currentUID: "",
-    posted: []
+  const [state, setState] = useState({
+    useruid: "",
+    firstName: "",
+    lastName: "",
+    profileURL: "",
+    imageURL: "",
+    NumberOfFriends: 0
   });
-
+  const [post, setPost] = useState([]);
   useEffect(() => {
     const fetchData = () => {
-      const currentUser = firebase.auth().currentUser;
+      const currentuser = firebase.auth().currentUser;
       db.collection("users")
-        .doc(currentUser.uid)
-        .onSnapshot((doc) => {
+        .doc(currentuser.uid)
+        .get()
+        .then((doc) => {
           //success
           if (doc.exists) {
-            let postDoc = doc.data();
-            setPost({
-              currentUID: currentUser.uid
+            let usersDoc = doc.data();
+            setState({
+              firstName: usersDoc.first_name,
+              lastName: usersDoc.last_name,
+              NumberOfFriends: usersDoc.friends_number,
+              useruid: currentuser.uid,
+              profileURL: usersDoc.profile_url
             });
-            fetchPosted();
+            fetchPosts(currentuser.uid);
           } else {
             //
           }
+        })
+        .catch((err) => {
+          //error
         });
     };
-    const fetchPosted = () => {
-      const currentUser = firebase.auth().currentUser;
+    const fetchPosts = (useruid) => {
       db.collection("users")
-        .doc(currentUser.uid)
+        .doc(useruid)
         .collection("post")
+        .orderBy("posted_date", "desc")
         .onSnapshot((doc) => {
-          let postedlist = [];
-          doc.forEach((posted) => {
-            postedlist.push(posted.doc());
+          let postlist = [];
+          doc.forEach((p) => {
+            postlist.push(p.data());
           });
+          setPost(postlist);
         });
     };
     fetchData();
   }, []);
-
   return (
-    <div className={classes.root}>
-      <Nav currentUID={post.currentUID} />
-      <Paper className={classes.paper} elevation={0}>
-        <Grid container spacing={2}>
-          <Grid item xs={4}>
-            <Card className={classes.friends}>
+    <div>
+      <Nav useruid={state.useruid} />
+      <div className={classes.root}>
+        <Grid container spacing={2} className={classes.container}>
+          <Grid item xs={4} className={classes.firstgrid}>
+            <Card className={classes.friendsList} elevation={10}>
               <CardHeader
-                avatar={
-                  <Avatar aria-label="recipe" className={classes.avatar}>
-                    J
-                  </Avatar>
-                }
-                title="Jerome Hipolito"
+                avatar={<Avatar src={state.profileURL} />}
+                title={state.firstName + " " + state.lastName}
+                subheader={"friends: " + state.NumberOfFriends}
               />
             </Card>
           </Grid>
           <Grid item xs={bp ? 12 : 8}>
-            <Card className={classes.post} elevation={bp ? 0 : 2}>
-              <CardHeader
-                avatar={<Avatar className={classes.avatar}>J</Avatar>}
-                title="Jerome Hipolito"
-                subheader={post.uploadDate}
-              />
-              <CardMedia
-                className={classes.media}
-                image={post.imageURL}
-                title="Paella dish"
-              />
-              <CardContent>
-                <Typography gutterBottom variant="body2">
-                  <Box fontWeight={600}>999999 likes</Box>
-                </Typography>
-                <Typography
-                  variant="body2"
-                  color="textPrimary"
-                  component="p"
-                  className={classes.caption}
-                >
-                  <Box fontWeight={600} m={0.3}>
-                    Jerome Hipolito
-                  </Box>
-                  <Box m={0.3}>{post.caption}</Box>
-                </Typography>
-              </CardContent>
-            </Card>
+            {post.map((p) => (
+              <Card className={classes.card}>
+                <CardHeader
+                  avatar={<Avatar src={state.profileURL} />}
+                  action={
+                    <IconButton aria-label="settings">
+                      <MoreVertIcon />
+                    </IconButton>
+                  }
+                  title={state.firstName + " " + state.lastName}
+                  subheader={moment(
+                    p.posted_date.toDate().toString()
+                  ).calendar()}
+                />
+                <CardMedia
+                  square
+                  className={classes.media}
+                  image={p.image_url}
+                />
+                <CardActions>
+                  <IconButton>
+                    <FavoriteIcon />
+                  </IconButton>
+                </CardActions>
+                <CardContent>
+                  <Typography variant="body2" color="textPrimary" component="p">
+                    0 likes
+                  </Typography>
+                  <Typography variant="body2" color="textPrimary" component="p">
+                    {p.caption}
+                  </Typography>
+                </CardContent>
+              </Card>
+            ))}
           </Grid>
         </Grid>
-      </Paper>
+      </div>
     </div>
   );
 }

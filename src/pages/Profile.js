@@ -1,6 +1,9 @@
+import React, { useState, useEffect } from "react";
 import Nav from "../component/Nav";
 import theme from "../utils/theme";
 import logo from "../image/Myprofile.jpg";
+import moment from "moment";
+import firebase from "../utils/firebase";
 import {
   makeStyles,
   useMediaQuery,
@@ -80,23 +83,71 @@ const useStyles = makeStyles((theme) => ({
     }
   }
 }));
-
-function Home() {
+const db = firebase.firestore();
+function Profile() {
   const classes = useStyles();
   const bp = useMediaQuery(theme.breakpoints.down("xs"));
+  const [state, setState] = useState({
+    useruid: "",
+    firstName: "",
+    lastName: "",
+    profileURL: "",
+    imageURL: "",
+    numberOfFriends: 0,
+    numberOfPost: 0
+  });
+  const [post, setPost] = useState([]);
+  useEffect(() => {
+    const fetchData = () => {
+      const currentuser = firebase.auth().currentUser;
+      db.collection("users")
+        .doc(currentuser.uid)
+        .onSnapshot((doc) => {
+          //success
+          if (doc.exists) {
+            let usersDoc = doc.data();
+            setState({
+              firstName: usersDoc.first_name,
+              lastName: usersDoc.last_name,
+              numberOfFriends: usersDoc.friends_number,
+              useruid: currentuser.uid,
+              profileURL: usersDoc.profile_url,
+              numberOfPost: usersDoc.post_number
+            });
+            fetchPosts(currentuser.uid);
+          } else {
+            //
+          }
+        });
+    };
+    const fetchPosts = (useruid) => {
+      db.collection("users")
+        .doc(useruid)
+        .collection("post")
+        .orderBy("posted_date", "desc")
+        .onSnapshot((doc) => {
+          let postlist = [];
+          doc.forEach((p) => {
+            postlist.push(p.data());
+          });
+          setPost(postlist);
+        });
+    };
+    fetchData();
+  }, []);
   return (
     <div className={classes.root}>
-      <Nav />
+      <Nav useruid={state.useruid} />
       <Card className={classes.card} elevation={0}>
         <Box className={classes.Profile}>
           <Avatar
             alt="Profile pic"
-            src={logo}
+            src={state.profileURL}
             className={classes.profilePicture}
           />
           <Box className={classes.details}>
             <Typography variant="h4" className={classes.name}>
-              <Box>Jerome Hipolito</Box>
+              <Box>{state.firstName + " " + state.lastName}</Box>
             </Typography>
             <Box className={classes.fandp}>
               <Typography variant="body1" className={classes.textFriends}>
@@ -107,7 +158,7 @@ function Home() {
               </Typography>
               <Typography variant="body1" className={classes.textPost}>
                 <Box>Post</Box>
-                <Box fontWeight={600}>2</Box>
+                <Box fontWeight={600}>{state.numberOfPost}</Box>
               </Typography>
             </Box>
           </Box>
@@ -126,20 +177,17 @@ function Home() {
           </Box>
         </Typography>
         <Grid container spacing={bp ? 2 : 4} justify="center">
-          <Grid item xs={1.5}>
-            <Card className={classes.post}>
-              <CardMedia className={classes.media} image={logo} />
-            </Card>
-          </Grid>
-          <Grid item xs={1.5}>
-            <Card className={classes.post}>
-              <CardMedia className={classes.media} image={logo} />
-            </Card>
-          </Grid>
+          {post.map((p) => (
+            <Grid item xs={1.5}>
+              <Card className={classes.post}>
+                <CardMedia className={classes.media} image={p.image_url} />
+              </Card>
+            </Grid>
+          ))}
         </Grid>
       </Paper>
     </div>
   );
 }
 
-export default Home;
+export default Profile;
