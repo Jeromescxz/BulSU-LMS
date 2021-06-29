@@ -27,14 +27,10 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: theme.shadows[5],
     padding: theme.spacing(2, 4, 3),
     display: "flex",
-    flexDirection: "column",
-    width: 500,
-    [theme.breakpoints.down("xs")]: {
-      width: 250
-    }
+    flexDirection: "column"
   },
   caption: {
-    width: 400,
+    width: 500,
     [theme.breakpoints.down("xs")]: {
       width: 200
     }
@@ -45,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 const db = firebase.firestore();
 
-export default function CreatePost({ open, setOpen, useruid }) {
+export default function ChangeProfilePic({ open, setOpen, useruid }) {
   const classes = useStyles();
   const [state, setState] = useState({
     caption: ""
@@ -115,16 +111,8 @@ export default function CreatePost({ open, setOpen, useruid }) {
         <Fade in={open}>
           <div className={classes.paper}>
             <Typography variant="h5">
-              <Box>Create a post</Box>
+              <Box>Upload a photo</Box>
             </Typography>
-
-            <InputBase
-              className={classes.caption}
-              onChange={handleChange("caption")}
-              placeholder="Write a post"
-              rows={5}
-              multiline
-            />
             <Button component="label">
               <Image color="inherit" />
               <input

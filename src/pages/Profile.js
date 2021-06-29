@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Nav from "../component/Nav";
+import ChangeProfile from "../modals/ChangeProfilePic";
 import theme from "../utils/theme";
-import logo from "../image/Myprofile.jpg";
-import moment from "moment";
 import firebase from "../utils/firebase";
 import {
   makeStyles,
@@ -13,6 +12,7 @@ import {
   Box,
   Typography,
   Divider,
+  Button,
   Paper,
   Grid
 } from "@material-ui/core";
@@ -140,11 +140,10 @@ function Profile() {
       <Nav useruid={state.useruid} />
       <Card className={classes.card} elevation={0}>
         <Box className={classes.Profile}>
-          <Avatar
-            alt="Profile pic"
-            src={state.profileURL}
-            className={classes.profilePicture}
-          />
+          <Box>
+            <Avatar src={state.profileURL} className={classes.profilePicture} />
+            <Button>Change</Button>
+          </Box>
           <Box className={classes.details}>
             <Typography variant="h4" className={classes.name}>
               <Box>{state.firstName + " " + state.lastName}</Box>
