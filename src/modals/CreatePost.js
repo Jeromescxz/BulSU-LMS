@@ -47,6 +47,7 @@ const db = firebase.firestore();
 
 export default function CreatePost({ open, setOpen, useruid }) {
   const classes = useStyles();
+
   const [state, setState] = useState({
     firstName: "",
     lastName: ""

@@ -47,10 +47,14 @@ const useStyles = makeStyles((theme) => ({
 }));
 const db = firebase.firestore();
 
-export default function ChangeProfile({ open, setOpen, useruid }) {
+export default function ChangeProfile({ useruid, open, setOpen }) {
   const classes = useStyles();
   const [state, setState] = useState({
-    caption: ""
+    firstName: "",
+    lastName: "",
+    useruid: "",
+    changeFirstName: "",
+    changeLastName: ""
   });
   const [imageURL, setImageURL] = useState("");
 
@@ -70,9 +74,10 @@ export default function ChangeProfile({ open, setOpen, useruid }) {
   };
 
   useEffect(() => {
+    const currentuser = firebase.auth().currentUser;
     const fetchData = () => {
       db.collection("users")
-        .doc(useruid)
+        .doc(currentuser.uid)
         .get()
         .then((doc) => {
           //success
@@ -80,7 +85,8 @@ export default function ChangeProfile({ open, setOpen, useruid }) {
             let usersDoc = doc.data();
             setState({
               firstName: usersDoc.first_name,
-              lastName: usersDoc.last_name
+              lastName: usersDoc.last_name,
+              useruid: currentuser.uid
             });
           } else {
             //
@@ -93,38 +99,26 @@ export default function ChangeProfile({ open, setOpen, useruid }) {
     fetchData();
   }, []);
 
-  const posted = (e) => {
+  const edited = (e) => {
     e.preventDefault();
-    if (imageURL === "") {
-      alert("add image");
-    } else {
-      const batch = db.batch();
-      const postRef = db
-        .collection("users")
-        .doc(useruid)
-        .collection("post")
-        .doc();
-      batch.set(postRef, {
-        caption: state.caption,
-        image_url: imageURL,
-        posted_date: new Date()
-      });
+    const batch = db.batch();
 
-      let postNumberRef = db.collection("users").doc(useruid);
-      batch.update(postNumberRef, {
-        post_number: firebase.firestore.FieldValue.increment(1)
-      });
+    let postNumberRef = db.collection("users").doc(state.useruid);
+    batch.update(postNumberRef, {
+      profile_url: imageURL,
+      first_name: state.changeFirstName,
+      last_name: state.changeLastName
+    });
 
-      batch
-        .commit()
-        .then(() => {
-          setImageURL("");
-          handleClose();
-        })
-        .catch((error) => {
-          //err
-        });
-    }
+    batch
+      .commit()
+      .then(() => {
+        setImageURL("");
+        handleClose();
+      })
+      .catch((error) => {
+        //err
+      });
   };
 
   return (
@@ -149,12 +143,14 @@ export default function ChangeProfile({ open, setOpen, useruid }) {
               label="First name"
               variant="outlined"
               defaultValue={state.firstName}
+              onChange={handleChange("changeFirstName")}
             />
             <TextField
               className={classes.label}
               label="Last name"
               variant="outlined"
               defaultValue={state.lastName}
+              onChange={handleChange("changeLastName")}
             />
             <Box>
               <Typography className={classes.uploadtext} variant="body1">
@@ -170,7 +166,7 @@ export default function ChangeProfile({ open, setOpen, useruid }) {
                 />
               </Button>
             </Box>
-            <Button onClick={posted} color="primary" variant="contained">
+            <Button onClick={edited} color="primary" variant="contained">
               Confirm
             </Button>
           </div>

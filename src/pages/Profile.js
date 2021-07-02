@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Nav from "../component/Nav";
-import ChangeProfile from "../modals/ChangeProfilePic";
+import ChangeProfile from "../modals/ChangeProfile";
 import theme from "../utils/theme";
 import firebase from "../utils/firebase";
 import {
@@ -17,6 +17,7 @@ import {
   Grid
 } from "@material-ui/core";
 //icons
+import Settings from "@material-ui/icons/Settings";
 import ImageOutlined from "@material-ui/icons/ImageOutlined";
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -81,12 +82,16 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       marginBottom: theme.spacing(1)
     }
+  },
+  editprofile: {
+    marginTop: 20
   }
 }));
 const db = firebase.firestore();
 function Profile() {
   const classes = useStyles();
   const bp = useMediaQuery(theme.breakpoints.down("xs"));
+  const [openCreatePost, setOpenCreatePost] = useState(false);
   const [state, setState] = useState({
     useruid: "",
     firstName: "",
@@ -142,7 +147,6 @@ function Profile() {
         <Box className={classes.Profile}>
           <Box>
             <Avatar src={state.profileURL} className={classes.profilePicture} />
-            <Button>Change</Button>
           </Box>
           <Box className={classes.details}>
             <Typography variant="h4" className={classes.name}>
@@ -160,6 +164,15 @@ function Profile() {
                 <Box fontWeight={600}>{state.numberOfPost}</Box>
               </Typography>
             </Box>
+            <Button
+              size={bp ? "small" : "medium"}
+              className={classes.editprofile}
+              variant="outlined"
+              onClick={() => setOpenCreatePost(true)}
+            >
+              <Settings />
+              Edit profile
+            </Button>
           </Box>
         </Box>
       </Card>
@@ -175,6 +188,7 @@ function Profile() {
             <Box>Post</Box>
           </Box>
         </Typography>
+
         <Grid container spacing={bp ? 2 : 4} justify="center">
           {post.map((p) => (
             <Grid item xs={1.5}>
@@ -185,6 +199,11 @@ function Profile() {
           ))}
         </Grid>
       </Paper>
+      <ChangeProfile
+        useruid={state.useruid}
+        open={openCreatePost}
+        setOpen={setOpenCreatePost}
+      />
     </div>
   );
 }
