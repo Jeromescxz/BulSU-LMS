@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   makeStyles,
@@ -7,8 +7,8 @@ import {
   Backdrop,
   Typography,
   Box,
-  InputBase,
-  Button
+  Button,
+  TextField
 } from "@material-ui/core";
 import firebase from "../utils/firebase";
 
@@ -37,11 +37,17 @@ const useStyles = makeStyles((theme) => ({
   },
   fileInput: {
     display: "none"
+  },
+  label: {
+    margin: theme.spacing(1)
+  },
+  uploadtext: {
+    display: "flex"
   }
 }));
 const db = firebase.firestore();
 
-export default function ChangeProfilePic({ open, setOpen, useruid }) {
+export default function ChangeProfile({ open, setOpen, useruid }) {
   const classes = useStyles();
   const [state, setState] = useState({
     caption: ""
@@ -62,6 +68,31 @@ export default function ChangeProfilePic({ open, setOpen, useruid }) {
   const handleClose = () => {
     setOpen(false);
   };
+
+  useEffect(() => {
+    const fetchData = () => {
+      db.collection("users")
+        .doc(useruid)
+        .get()
+        .then((doc) => {
+          //success
+          if (doc.exists) {
+            let usersDoc = doc.data();
+            setState({
+              firstName: usersDoc.first_name,
+              lastName: usersDoc.last_name
+            });
+          } else {
+            //
+          }
+        })
+        .catch((err) => {
+          //error
+        });
+    };
+    fetchData();
+  }, []);
+
   const posted = (e) => {
     e.preventDefault();
     if (imageURL === "") {
@@ -111,19 +142,36 @@ export default function ChangeProfilePic({ open, setOpen, useruid }) {
         <Fade in={open}>
           <div className={classes.paper}>
             <Typography variant="h5">
-              <Box>Upload a photo</Box>
+              <Box>Edit Profile</Box>
             </Typography>
-            <Button component="label">
-              <Image color="inherit" />
-              <input
-                type="file"
-                onChange={onFileChange}
-                accept="image/*"
-                required
-              />
-            </Button>
+            <TextField
+              className={classes.label}
+              label="First name"
+              variant="outlined"
+              defaultValue={state.firstName}
+            />
+            <TextField
+              className={classes.label}
+              label="Last name"
+              variant="outlined"
+              defaultValue={state.lastName}
+            />
+            <Box>
+              <Typography className={classes.uploadtext} variant="body1">
+                <Box>Upload a photo</Box>
+              </Typography>
+              <Button component="label">
+                <Image color="inherit" />
+                <input
+                  type="file"
+                  onChange={onFileChange}
+                  accept="image/*"
+                  required
+                />
+              </Button>
+            </Box>
             <Button onClick={posted} color="primary" variant="contained">
-              Post
+              Confirm
             </Button>
           </div>
         </Fade>

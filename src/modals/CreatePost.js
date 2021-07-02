@@ -48,7 +48,8 @@ const db = firebase.firestore();
 export default function CreatePost({ open, setOpen, useruid }) {
   const classes = useStyles();
   const [state, setState] = useState({
-    caption: ""
+    firstName: "",
+    lastName: ""
   });
   const [imageURL, setImageURL] = useState("");
 
@@ -66,6 +67,7 @@ export default function CreatePost({ open, setOpen, useruid }) {
   const handleClose = () => {
     setOpen(false);
   };
+
   const posted = (e) => {
     e.preventDefault();
     if (imageURL === "") {
