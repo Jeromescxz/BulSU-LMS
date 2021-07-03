@@ -72,28 +72,27 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
   const handleClose = () => {
     setOpen(false);
   };
-
+  console.log(state.changeFirstName);
+  console.log(state.changeLastName);
   useEffect(() => {
     const currentuser = firebase.auth().currentUser;
     const fetchData = () => {
       db.collection("users")
         .doc(currentuser.uid)
-        .get()
-        .then((doc) => {
+        .onSnapshot((doc) => {
           //success
           if (doc.exists) {
             let usersDoc = doc.data();
             setState({
               firstName: usersDoc.first_name,
               lastName: usersDoc.last_name,
-              useruid: currentuser.uid
+              useruid: currentuser.uid,
+              changeFirstName: state.firstName,
+              changeLastName: state.lastName
             });
           } else {
             //
           }
-        })
-        .catch((err) => {
-          //error
         });
     };
     fetchData();
@@ -103,8 +102,8 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
     e.preventDefault();
     const batch = db.batch();
 
-    let postNumberRef = db.collection("users").doc(state.useruid);
-    batch.update(postNumberRef, {
+    let EditRef = db.collection("users").doc(state.useruid);
+    batch.update(EditRef, {
       profile_url: imageURL,
       first_name: state.changeFirstName,
       last_name: state.changeLastName

@@ -49,8 +49,7 @@ export default function CreatePost({ open, setOpen, useruid }) {
   const classes = useStyles();
 
   const [state, setState] = useState({
-    firstName: "",
-    lastName: ""
+    caption: " "
   });
   const [imageURL, setImageURL] = useState("");
 
@@ -94,6 +93,7 @@ export default function CreatePost({ open, setOpen, useruid }) {
       batch
         .commit()
         .then(() => {
+          setState({ caption: " " });
           setImageURL("");
           handleClose();
         })
