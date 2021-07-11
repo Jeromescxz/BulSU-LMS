@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 import {
   makeStyles,
@@ -13,7 +13,6 @@ import {
 import firebase from "../utils/firebase";
 
 //icons
-import Image from "@material-ui/icons/Image";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -38,72 +37,53 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("xs")]: {
       width: 200
     }
-  },
-  fileInput: {
-    display: "none"
   }
 }));
 const db = firebase.firestore();
 
-export default function CreatePost({ open, setOpen, useruid }) {
+export default function EditPost({ open, setOpen, useruid, puid }) {
   const classes = useStyles();
 
   const [state, setState] = useState({
-    caption: " "
+    caption: "",
+    imageUrl: ""
   });
-  const [imageURL, setImageURL] = useState("");
 
   const handleChange = (prop) => (event) => {
     setState({ ...state, [prop]: event.target.value });
-  };
-  const onFileChange = async (event) => {
-    const file = event.target.files[0];
-    var storageRef = firebase.storage().ref();
-    var fileRef = storageRef.child(file.name);
-    await fileRef.put(file);
-    setImageURL(await fileRef.getDownloadURL());
   };
 
   const handleClose = () => {
     setOpen(false);
   };
 
-  const posted = (e) => {
+  const confirm = (e) => {
     e.preventDefault();
-    if (imageURL === "") {
-      alert("add image");
-    } else {
-      const batch = db.batch();
-      const postRef = db
-        .collection("users")
-        .doc(useruid)
-        .collection("post")
-        .doc();
-      batch.set(postRef, {
-        caption: state.caption,
-        image_url: imageURL,
-        posted_date: new Date(),
-        likes: 0,
-        isLike: false
-      });
-
-      let postNumberRef = db.collection("users").doc(useruid);
-      batch.update(postNumberRef, {
-        post_number: firebase.firestore.FieldValue.increment(1)
-      });
-
-      batch
-        .commit()
-        .then(() => {
-          setState({ caption: " " });
-          setImageURL("");
-          handleClose();
-        })
-        .catch((error) => {
-          //err
-        });
-    }
   };
+  console.log(puid);
+
+  useEffect(() => {
+    const fetchData = () => {
+      const currentuser = firebase.auth().currentUser;
+      db.collection("users")
+        .doc(currentuser.uid)
+        .collection("post")
+        .doc(puid.toString())
+        .onSnapshot((doc) => {
+          //success
+          if (doc.exists) {
+            let usersDoc = doc.data();
+            setState({
+              caption: usersDoc.caption,
+              imageUrl: usersDoc.image_url
+            });
+          } else {
+            //
+          }
+        });
+    };
+    fetchData();
+  }, []);
 
   return (
     <div>
@@ -130,16 +110,8 @@ export default function CreatePost({ open, setOpen, useruid }) {
               rows={5}
               multiline
             />
-            <Button component="label">
-              <Image color="inherit" />
-              <input
-                type="file"
-                onChange={onFileChange}
-                accept="image/*"
-                required
-              />
-            </Button>
-            <Button onClick={posted} color="primary" variant="contained">
+
+            <Button onClick={confirm} color="primary" variant="contained">
               Post
             </Button>
           </div>

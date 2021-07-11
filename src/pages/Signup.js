@@ -147,7 +147,8 @@ function Signup() {
             profile_url: "",
             post_number: 0,
             friends_number: 0,
-            created_at: new Date()
+            created_at: new Date(),
+            bio: ""
           });
           batch
             .commit()

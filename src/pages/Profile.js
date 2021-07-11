@@ -96,6 +96,7 @@ function Profile() {
     useruid: "",
     firstName: "",
     lastName: "",
+    bio: "",
     profileURL: "",
     imageURL: "",
     numberOfFriends: 0,
@@ -117,7 +118,8 @@ function Profile() {
               numberOfFriends: usersDoc.friends_number,
               useruid: currentuser.uid,
               profileURL: usersDoc.profile_url,
-              numberOfPost: usersDoc.post_number
+              numberOfPost: usersDoc.post_number,
+              bio: usersDoc.bio
             });
             fetchPosts(currentuser.uid);
           } else {
@@ -164,6 +166,9 @@ function Profile() {
                 <Box fontWeight={600}>{state.numberOfPost}</Box>
               </Typography>
             </Box>
+            <Typography variant="body2" color="textSecondary" component="p">
+              {state.bio}
+            </Typography>
             <Button
               size={bp ? "small" : "medium"}
               className={classes.editprofile}

@@ -52,9 +52,11 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
   const [state, setState] = useState({
     firstName: "",
     lastName: "",
+    bio: "",
     useruid: "",
     changeFirstName: "",
-    changeLastName: ""
+    changeLastName: "",
+    changeBio: ""
   });
   const [imageURL, setImageURL] = useState("");
 
@@ -72,8 +74,7 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
   const handleClose = () => {
     setOpen(false);
   };
-  console.log(state.changeFirstName);
-  console.log(state.changeLastName);
+
   useEffect(() => {
     const currentuser = firebase.auth().currentUser;
     const fetchData = () => {
@@ -87,9 +88,12 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
               firstName: usersDoc.first_name,
               lastName: usersDoc.last_name,
               useruid: currentuser.uid,
-              changeFirstName: state.firstName,
-              changeLastName: state.lastName
+              bio: usersDoc.bio,
+              changeFirstName: usersDoc.first_name,
+              changeLastName: usersDoc.last_name,
+              changeBio: usersDoc.bio
             });
+            setImageURL(usersDoc.profile_url);
           } else {
             //
           }
@@ -106,13 +110,13 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
     batch.update(EditRef, {
       profile_url: imageURL,
       first_name: state.changeFirstName,
-      last_name: state.changeLastName
+      last_name: state.changeLastName,
+      bio: state.changeBio
     });
 
     batch
       .commit()
       .then(() => {
-        setImageURL("");
         handleClose();
       })
       .catch((error) => {
@@ -150,6 +154,14 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
               variant="outlined"
               defaultValue={state.lastName}
               onChange={handleChange("changeLastName")}
+            />
+            <TextField
+              label="Bio"
+              multiline
+              rows={4}
+              defaultValue={state.bio}
+              onChange={handleChange("changeBio")}
+              variant="outlined"
             />
             <Box>
               <Typography className={classes.uploadtext} variant="body1">
