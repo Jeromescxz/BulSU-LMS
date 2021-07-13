@@ -13,7 +13,7 @@ import {
 import firebase from "../utils/firebase";
 
 //icons
-import Image from "@material-ui/icons/Image";
+import Image from "@material-ui/icons/PhotoCamera";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
     padding: theme.spacing(2, 4, 3),
     display: "flex",
     flexDirection: "column",
+    borderRadius: 10,
     width: 500,
     [theme.breakpoints.down("xs")]: {
       width: 250
@@ -41,11 +42,20 @@ const useStyles = makeStyles((theme) => ({
   },
   fileInput: {
     display: "none"
+  },
+  fileinput: {
+    marginBottom: 10
   }
 }));
 const db = firebase.firestore();
 
-export default function CreatePost({ open, setOpen, useruid }) {
+export default function CreatePost({
+  open,
+  setOpen,
+  useruid,
+  firstname,
+  lastname
+}) {
   const classes = useStyles();
 
   const [state, setState] = useState({
@@ -56,6 +66,7 @@ export default function CreatePost({ open, setOpen, useruid }) {
   const handleChange = (prop) => (event) => {
     setState({ ...state, [prop]: event.target.value });
   };
+
   const onFileChange = async (event) => {
     const file = event.target.files[0];
     var storageRef = firebase.storage().ref();
@@ -74,17 +85,28 @@ export default function CreatePost({ open, setOpen, useruid }) {
       alert("add image");
     } else {
       const batch = db.batch();
-      const postRef = db
+      const yourpostRef = db
         .collection("users")
         .doc(useruid)
         .collection("post")
         .doc();
-      batch.set(postRef, {
+      batch.set(yourpostRef, {
         caption: state.caption,
         image_url: imageURL,
         posted_date: new Date(),
         likes: 0,
         isLike: false
+      });
+      const allpostRef = db.collection("allpost").doc();
+      batch.set(allpostRef, {
+        first_name: firstname,
+        last_name: lastname,
+        caption: state.caption,
+        image_url: imageURL,
+        posted_date: new Date(),
+        likes: 0,
+        comments: [],
+        like_by: []
       });
 
       let postNumberRef = db.collection("users").doc(useruid);
@@ -120,25 +142,33 @@ export default function CreatePost({ open, setOpen, useruid }) {
         <Fade in={open}>
           <div className={classes.paper}>
             <Typography variant="h5">
-              <Box>Create a post</Box>
+              <Box>Create Post</Box>
             </Typography>
 
             <InputBase
               className={classes.caption}
               onChange={handleChange("caption")}
-              placeholder="Write a post"
+              placeholder="Write some thing here"
               rows={5}
               multiline
             />
-            <Button component="label">
-              <Image color="inherit" />
+            <Button
+              component="label"
+              variant="outlined"
+              className={classes.fileinput}
+            >
+              <Image color="primary" />
               <input
                 type="file"
                 onChange={onFileChange}
+                onClick={(event) => {
+                  event.target.value = null;
+                }}
                 accept="image/*"
                 required
               />
             </Button>
+
             <Button onClick={posted} color="primary" variant="contained">
               Post
             </Button>

@@ -90,7 +90,9 @@ function Home() {
     puid: "none"
   });
   const [post, setPost] = useState([]);
+  const [allpost, setAllPost] = useState([]);
   const [postuid, setPostuid] = useState([]);
+  const [allPostuid, setAllPostuid] = useState([]);
   const [openDialog, setOpenDialog] = React.useState(false);
 
   const handleClickOpenDialog = () => {
@@ -142,20 +144,32 @@ function Home() {
           setPostuid(postuidlist);
         });
     };
+    const fetchAllUsers = () => {
+      db.collection("allpost")
+        .orderBy("posted_date", "desc")
+        .onSnapshot((doc) => {
+          let allpostlist = [];
+          let allpostuidlist = [];
+          doc.forEach((p) => {
+            allpostlist.push(p.data());
+            allpostuidlist.push(p.id);
+          });
+          setAllPost(allpostlist);
+          setAllPostuid(allpostuidlist);
+        });
+    };
+    fetchAllUsers();
     fetchData();
   }, []);
 
   const handleUnFavorite = (i) => {
     console.log("unlike");
     const batch = db.batch();
-    let editRef = db
-      .collection("users")
-      .doc(state.useruid)
-      .collection("post")
-      .doc(postuid[i].toString());
+    let editRef = db.collection("allpost").doc(allPostuid[i].toString());
     batch.update(editRef, {
       likes: firebase.firestore.FieldValue.increment(-1),
-      isLiked: false
+      isLiked: false,
+      like_by: firebase.firestore.FieldValue.arrayRemove(state.useruid)
     });
     batch
       .commit()
@@ -167,17 +181,12 @@ function Home() {
 
   const handleMakeFavorite = (i) => {
     console.log("like");
-
     const batch = db.batch();
-    let editRef = db
-      .collection("users")
-      .doc(state.useruid)
-      .collection("post")
-      .doc(postuid[i].toString());
-
+    let editRef = db.collection("allpost").doc(allPostuid[i].toString());
     batch.update(editRef, {
       likes: firebase.firestore.FieldValue.increment(1),
-      isLiked: true
+      isLiked: true,
+      like_by: firebase.firestore.FieldValue.arrayUnion(state.useruid)
     });
     batch
       .commit()
@@ -207,7 +216,11 @@ function Home() {
 
   return (
     <div>
-      <Nav useruid={state.useruid} />
+      <Nav
+        useruid={state.useruid}
+        lastname={state.lastName}
+        firstname={state.firstName}
+      />
       <div className={classes.root}>
         <Grid container spacing={2} className={classes.container}>
           <Grid item xs={4} className={classes.firstgrid}>
@@ -220,7 +233,7 @@ function Home() {
             </Card>
           </Grid>
           <Grid item xs={bp ? 12 : 8}>
-            {post.map((p, index) => (
+            {allpost.map((p, index) => (
               <Card className={classes.card}>
                 <CardHeader
                   avatar={<Avatar src={state.profileURL} />}
@@ -297,7 +310,7 @@ function Home() {
                       )}
                     </PopupState>
                   }
-                  title={state.firstName + " " + state.lastName}
+                  title={p.first_name + " " + p.last_name}
                   subheader={moment(
                     p.posted_date.toDate().toString()
                   ).calendar()}

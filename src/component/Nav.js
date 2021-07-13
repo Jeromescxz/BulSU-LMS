@@ -80,7 +80,7 @@ const signout = () => {
       // An error happened.
     });
 };
-function Nav({ useruid }) {
+function Nav({ useruid, firstname, lastname }) {
   const [open, setOpen] = useState(false);
   const history = useHistory("");
   const classes = useStyles();
@@ -104,7 +104,7 @@ function Nav({ useruid }) {
             <Grid item xs={8}>
               <Typography color="primary" variant="h5">
                 <Box fontWeight="fontWeightMedium" fontStyle="italic" m={1}>
-                  Social Medyas
+                  Sosyal Medyas
                 </Box>
               </Typography>
             </Grid>
@@ -143,7 +143,7 @@ function Nav({ useruid }) {
                 >
                   <KeyboardBackspace />
                 </IconButton>
-                Social Medyas
+                Sosyal Medyas
               </Box>
             </Typography>
             <Divider />
@@ -188,6 +188,8 @@ function Nav({ useruid }) {
         useruid={useruid}
         open={openCreatePost}
         setOpen={setOpenCreatePost}
+        lastname={lastname}
+        firstname={firstname}
       />
     </div>
   );
