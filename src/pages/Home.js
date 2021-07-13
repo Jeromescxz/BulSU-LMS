@@ -311,9 +311,9 @@ function Home() {
                     </PopupState>
                   }
                   title={p.first_name + " " + p.last_name}
-                  subheader={moment(
-                    p.posted_date.toDate().toString()
-                  ).calendar()}
+                  subheader={moment(p.posted_date.toDate().toString())
+                    .startOf("hour")
+                    .fromNow()}
                 />
 
                 <CardMedia
