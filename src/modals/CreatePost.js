@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     borderRadius: 10,
-    width: 500,
+    width: 400,
     [theme.breakpoints.down("xs")]: {
       width: 250
     }
