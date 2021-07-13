@@ -114,11 +114,6 @@ export default function ChangeProfile({ useruid, open, setOpen }) {
       bio: state.changeBio
     });
 
-    let EditAllUserRef = db.collection("allpost").doc();
-    batch.update(EditAllUserRef, {
-      profile_url: imageURL
-    });
-
     batch
       .commit()
       .then(() => {
