@@ -236,7 +236,7 @@ function Home() {
             {allpost.map((p, index) => (
               <Card className={classes.card}>
                 <CardHeader
-                  avatar={<Avatar src={p.profile_url} />}
+                  avatar={<Avatar src={state.profileURL} />}
                   action={
                     <PopupState variant="popper" popupId="demo-popup-popper">
                       {(popupState) => (
@@ -316,11 +316,7 @@ function Home() {
                   ).calendar()}
                 />
 
-                <CardMedia
-                  square
-                  className={classes.media}
-                  image={p.image_url}
-                />
+                <CardMedia className={classes.media} image={p.image_url} />
                 <CardActions>
                   {p.isLiked ? (
                     <IconButton
