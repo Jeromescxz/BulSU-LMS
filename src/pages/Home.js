@@ -236,7 +236,7 @@ function Home() {
             {allpost.map((p, index) => (
               <Card className={classes.card}>
                 <CardHeader
-                  avatar={<Avatar src={state.profileURL} />}
+                  avatar={<Avatar src={p.profile_url} />}
                   action={
                     <PopupState variant="popper" popupId="demo-popup-popper">
                       {(popupState) => (
