@@ -228,7 +228,7 @@ function Home() {
               <CardHeader
                 avatar={<Avatar src={state.profileURL} />}
                 title={state.firstName + " " + state.lastName}
-                subheader={"friends: " + state.NumberOfFriends}
+                subheader={"Status: Active now"}
               />
             </Card>
           </Grid>
