@@ -6,9 +6,6 @@ import {
   Fade,
   Modal,
   Backdrop,
-  Typography,
-  Box,
-  InputBase,
   Button,
   Grid,
   CardMedia,
@@ -20,7 +17,6 @@ import {
 import firebase from "../utils/firebase";
 
 //icons
-import Image from "@material-ui/icons/PhotoCamera";
 
 const useStyles = makeStyles((theme) => ({
   modal: {
@@ -135,6 +131,11 @@ export default function Comment({
       commented_date: new Date(),
       posted_by: useruid,
       profile_pic: UserProfile
+    });
+
+    const commentNo = db.collection("allpost").doc(postuid);
+    batch.update(commentNo, {
+      comment_no: firebase.firestore.FieldValue.increment(1)
     });
 
     batch

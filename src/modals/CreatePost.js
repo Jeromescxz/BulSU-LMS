@@ -95,7 +95,8 @@ export default function CreatePost({
         posted_date: new Date(),
         like_by: [],
         posted_by: useruid,
-        profile_pic: profilepic
+        profile_pic: profilepic,
+        comment_no: 0
       });
 
       let postNumberRef = db.collection("users").doc(useruid);

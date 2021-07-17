@@ -26,7 +26,8 @@ import {
   DialogTitle,
   DialogContentText,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Badge
 } from "@material-ui/core";
 import MoreHoriIcon from "@material-ui/icons/MoreHoriz";
 import FavoriteIcon from "@material-ui/icons/Favorite";
@@ -365,7 +366,9 @@ function Home() {
                     </IconButton>
                   )}
                   <IconButton edge="end" onClick={() => AddComment(index)}>
-                    <ModeComment />
+                    <Badge color="secondary" badgeContent={p.comment_no}>
+                      <ModeComment />
+                    </Badge>
                   </IconButton>
                 </CardActions>
                 <CardContent>
