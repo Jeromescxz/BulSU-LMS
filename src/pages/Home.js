@@ -213,6 +213,17 @@ function Home() {
         .delete()
         .then(() => {
           console.log("Document successfully deleted!");
+          const batch = db.batch();
+          let editRef = db.collection("users").doc(state.useruid);
+          batch.update(editRef, {
+            post_number: firebase.firestore.FieldValue.increment(-1)
+          });
+          batch
+            .commit()
+            .then(() => {})
+            .catch((error) => {
+              //err
+            });
           handleClose();
         })
         .catch((error) => {

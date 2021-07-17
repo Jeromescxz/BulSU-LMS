@@ -104,7 +104,7 @@ export default function Comment({
       db.collection("allpost")
         .doc(postuid)
         .collection("comment")
-        .orderBy("commented_date", "desc")
+        .orderBy("commented_date")
         .onSnapshot((doc) => {
           let commentlist = [];
           doc.forEach((p) => {

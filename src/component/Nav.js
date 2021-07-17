@@ -12,7 +12,8 @@ import {
   Typography,
   AppBar,
   Toolbar,
-  Grid
+  Grid,
+  Avatar
 } from "@material-ui/core";
 import { useHistory } from "react-router-dom";
 import firebase from "../utils/firebase";
