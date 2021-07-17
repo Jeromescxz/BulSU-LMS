@@ -54,7 +54,8 @@ export default function CreatePost({
   setOpen,
   useruid,
   firstname,
-  lastname
+  lastname,
+  profilepic
 }) {
   const classes = useStyles();
 
@@ -85,18 +86,6 @@ export default function CreatePost({
       alert("add image");
     } else {
       const batch = db.batch();
-      const yourpostRef = db
-        .collection("users")
-        .doc(useruid)
-        .collection("post")
-        .doc();
-      batch.set(yourpostRef, {
-        caption: state.caption,
-        image_url: imageURL,
-        posted_date: new Date(),
-        likes: 0,
-        isLike: false
-      });
       const allpostRef = db.collection("allpost").doc();
       batch.set(allpostRef, {
         first_name: firstname,
@@ -104,9 +93,9 @@ export default function CreatePost({
         caption: state.caption,
         image_url: imageURL,
         posted_date: new Date(),
-        likes: 0,
-        comments: [],
-        like_by: []
+        like_by: [],
+        posted_by: useruid,
+        profile_pic: profilepic
       });
 
       let postNumberRef = db.collection("users").doc(useruid);
