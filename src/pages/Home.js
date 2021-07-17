@@ -4,7 +4,7 @@ import firebase from "../utils/firebase";
 import moment from "moment";
 import theme from "../utils/theme";
 import PopupState, { bindToggle, bindPopper } from "material-ui-popup-state";
-import EditPost from "../modals/EditPost";
+import Comment from "../modals/Comment";
 import {
   Grid,
   makeStyles,
@@ -31,6 +31,9 @@ import {
 import MoreHoriIcon from "@material-ui/icons/MoreHoriz";
 import FavoriteIcon from "@material-ui/icons/Favorite";
 import FavoriteBorderIcon from "@material-ui/icons/FavoriteBorder";
+
+import ModeComment from "@material-ui/icons/ModeCommentOutlined";
+
 var useStyles = makeStyles((theme) => ({
   root: {
     marginTop: 100,
@@ -72,6 +75,21 @@ var useStyles = makeStyles((theme) => ({
   },
   buttons: {
     textTransform: "none"
+  },
+  comment: {
+    height: 50,
+    width: "100%",
+    borderTop: "1px solid gray",
+    padding: 5,
+    display: "flex",
+    alignItems: "center"
+  },
+  commentInput: {
+    marginLeft: 5,
+    width: "100%",
+    height: "100%",
+    outline: "none",
+    border: "none"
   }
 }));
 
@@ -86,12 +104,23 @@ function Home() {
     lastName: "",
     profileURL: "",
     imageURL: "",
-    NumberOfFriends: 0,
-    puid: "none"
+    NumberOfFriends: 0
+
+    //
   });
-  const [post, setPost] = useState([]);
+  const [statep, setStatep] = useState({
+    firstname: "",
+    lastname: "",
+    postimage: "",
+    nolikes: 0,
+    dateposted: "",
+    caption: "",
+    profilepic: "",
+    postuid: "f"
+  });
+
   const [allpost, setAllPost] = useState([]);
-  const [postuid, setPostuid] = useState([]);
+
   const [allPostuid, setAllPostuid] = useState([]);
   const [openDialog, setOpenDialog] = React.useState(false);
 
@@ -107,8 +136,7 @@ function Home() {
       const currentuser = firebase.auth().currentUser;
       db.collection("users")
         .doc(currentuser.uid)
-        .get()
-        .then((doc) => {
+        .onSnapshot((doc) => {
           //success
           if (doc.exists) {
             let usersDoc = doc.data();
@@ -119,31 +147,12 @@ function Home() {
               useruid: currentuser.uid,
               profileURL: usersDoc.profile_url
             });
-            fetchPosts(currentuser.uid);
           } else {
             //
           }
-        })
-        .catch((err) => {
-          //error
         });
     };
-    const fetchPosts = (useruid) => {
-      db.collection("users")
-        .doc(useruid)
-        .collection("post")
-        .orderBy("posted_date", "desc")
-        .onSnapshot((doc) => {
-          let postlist = [];
-          let postuidlist = [];
-          doc.forEach((p) => {
-            postlist.push(p.data());
-            postuidlist.push(p.id);
-          });
-          setPost(postlist);
-          setPostuid(postuidlist);
-        });
-    };
+
     const fetchAllUsers = () => {
       db.collection("allpost")
         .orderBy("posted_date", "desc")
@@ -158,6 +167,7 @@ function Home() {
           setAllPostuid(allpostuidlist);
         });
     };
+
     fetchAllUsers();
     fetchData();
   }, []);
@@ -167,7 +177,6 @@ function Home() {
     const batch = db.batch();
     let editRef = db.collection("allpost").doc(allPostuid[i].toString());
     batch.update(editRef, {
-      likes: firebase.firestore.FieldValue.increment(-1),
       isLiked: false,
       like_by: firebase.firestore.FieldValue.arrayRemove(state.useruid)
     });
@@ -184,7 +193,6 @@ function Home() {
     const batch = db.batch();
     let editRef = db.collection("allpost").doc(allPostuid[i].toString());
     batch.update(editRef, {
-      likes: firebase.firestore.FieldValue.increment(1),
       isLiked: true,
       like_by: firebase.firestore.FieldValue.arrayUnion(state.useruid)
     });
@@ -195,31 +203,54 @@ function Home() {
         //err
       });
   };
-  const isDelete = (i) => {
-    db.collection("users")
-      .doc(state.useruid)
-      .collection("post")
-      .doc(postuid[i].toString())
-      .delete()
-      .then(() => {
-        console.log("Document successfully deleted!");
-        handleClose();
-      })
-      .catch((error) => {
-        console.log("Error removing document: ", error);
-      });
+  const isDelete = (i, postedby) => {
+    if (state.useruid !== postedby) {
+      console.log("this is not your post");
+    } else {
+      db.collection("allpost")
+        .doc(allPostuid[i].toString())
+        .delete()
+        .then(() => {
+          console.log("Document successfully deleted!");
+          handleClose();
+        })
+        .catch((error) => {
+          console.log("Error removing document: ", error);
+        });
+    }
   };
-  const isEdit = (i) => {
-    setState({ ...state, puid: postuid[i] });
+  const AddComment = (i) => {
+    db.collection("allpost")
+      .doc(allPostuid[i].toString())
+      .onSnapshot((doc) => {
+        //success
+        if (doc.exists) {
+          let usersDoc = doc.data();
+          setStatep({
+            firstname: usersDoc.first_name,
+            lastname: usersDoc.last_name,
+            postimage: usersDoc.image_url,
+            nolikes: usersDoc.like_by.length,
+            dateposted: moment(
+              usersDoc.posted_date.toDate().toString()
+            ).calendar(),
+            caption: usersDoc.caption,
+            profilepic: usersDoc.profile_pic,
+            postuid: allPostuid[i]
+          });
+        } else {
+          //
+        }
+      });
     setOpenCreatePost(true);
   };
-
   return (
     <div>
       <Nav
         useruid={state.useruid}
         lastname={state.lastName}
         firstname={state.firstName}
+        profilepic={state.profileURL}
       />
       <div className={classes.root}>
         <Grid container spacing={2} className={classes.container}>
@@ -236,17 +267,21 @@ function Home() {
             {allpost.map((p, index) => (
               <Card className={classes.card}>
                 <CardHeader
-                  avatar={<Avatar src={state.profileURL} />}
+                  avatar={<Avatar src={p.profile_pic} />}
                   action={
                     <PopupState variant="popper" popupId="demo-popup-popper">
                       {(popupState) => (
                         <div>
-                          <IconButton
-                            aria-label="settings"
-                            {...bindToggle(popupState)}
-                          >
-                            <MoreHoriIcon />
-                          </IconButton>
+                          {state.useruid === p.posted_by ? (
+                            <IconButton
+                              aria-label="settings"
+                              {...bindToggle(popupState)}
+                            >
+                              <MoreHoriIcon />
+                            </IconButton>
+                          ) : (
+                            ""
+                          )}
 
                           <Popper {...bindPopper(popupState)} transition>
                             {({ TransitionProps }) => (
@@ -254,12 +289,6 @@ function Home() {
                                 <Paper>
                                   <Card>
                                     <ButtonGroup orientation="vertical">
-                                      <Button
-                                        className={classes.buttons}
-                                        onClick={() => isEdit(index)}
-                                      >
-                                        Edit
-                                      </Button>
                                       <Button
                                         className={classes.buttons}
                                         onClick={handleClickOpenDialog}
@@ -292,7 +321,9 @@ function Home() {
                                             Disagree
                                           </Button>
                                           <Button
-                                            onClick={() => isDelete(index)}
+                                            onClick={() =>
+                                              isDelete(index, p.posted_by)
+                                            }
                                             color="primary"
                                             autoFocus
                                           >
@@ -320,7 +351,6 @@ function Home() {
                 <CardActions>
                   {p.isLiked ? (
                     <IconButton
-                      key={index}
                       edge="end"
                       onClick={() => handleUnFavorite(index)}
                     >
@@ -328,17 +358,19 @@ function Home() {
                     </IconButton>
                   ) : (
                     <IconButton
-                      key={index}
                       edge="end"
                       onClick={() => handleMakeFavorite(index)}
                     >
                       <FavoriteBorderIcon />
                     </IconButton>
                   )}
+                  <IconButton edge="end" onClick={() => AddComment(index)}>
+                    <ModeComment />
+                  </IconButton>
                 </CardActions>
                 <CardContent>
                   <Typography variant="body2" color="textPrimary" component="p">
-                    {p.likes} likes
+                    {p.like_by.length} likes{" "}
                   </Typography>
                   <Typography variant="body2" color="textPrimary" component="p">
                     {p.caption}
@@ -349,11 +381,21 @@ function Home() {
           </Grid>
         </Grid>
       </div>
-      <EditPost
+      <Comment
         useruid={state.useruid}
         open={openCreatePost}
         setOpen={setOpenCreatePost}
-        puid={state.puid}
+        lastname={statep.lastname}
+        firstname={statep.firstname}
+        postimage={statep.postimage}
+        dateposted={statep.dateposted}
+        caption={statep.caption}
+        nolikes={statep.nolikes}
+        profilepic={statep.profilepic}
+        postuid={statep.postuid}
+        UserFirstname={state.firstName}
+        UserLastname={state.lastName}
+        UserProfile={state.profileURL}
       />
     </div>
   );

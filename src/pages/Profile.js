@@ -127,10 +127,8 @@ function Profile() {
           }
         });
     };
-    const fetchPosts = (useruid) => {
-      db.collection("users")
-        .doc(useruid)
-        .collection("post")
+    const fetchPosts = () => {
+      db.collection("allpost")
         .orderBy("posted_date", "desc")
         .onSnapshot((doc) => {
           let postlist = [];
@@ -144,7 +142,11 @@ function Profile() {
   }, []);
   return (
     <div className={classes.root}>
-      <Nav useruid={state.useruid} />
+      <Nav
+        useruid={state.useruid}
+        firstname={state.firstName}
+        lastname={state.lastName}
+      />
       <Card className={classes.card} elevation={0}>
         <Box className={classes.Profile}>
           <Box>
@@ -197,9 +199,13 @@ function Profile() {
         <Grid container spacing={bp ? 2 : 4} justify="center">
           {post.map((p) => (
             <Grid item xs={1.5}>
-              <Card className={classes.post}>
-                <CardMedia className={classes.media} image={p.image_url} />
-              </Card>
+              {p.posted_by === state.useruid ? (
+                <Card className={classes.post}>
+                  <CardMedia className={classes.media} image={p.image_url} />
+                </Card>
+              ) : (
+                ""
+              )}
             </Grid>
           ))}
         </Grid>

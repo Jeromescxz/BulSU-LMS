@@ -80,7 +80,7 @@ const signout = () => {
       // An error happened.
     });
 };
-function Nav({ useruid, firstname, lastname }) {
+function Nav({ useruid, firstname, lastname, profilepic }) {
   const [open, setOpen] = useState(false);
   const history = useHistory("");
   const classes = useStyles();
@@ -190,6 +190,7 @@ function Nav({ useruid, firstname, lastname }) {
         setOpen={setOpenCreatePost}
         lastname={lastname}
         firstname={firstname}
+        profilepic={profilepic}
       />
     </div>
   );
