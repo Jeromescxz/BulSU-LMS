@@ -3,7 +3,7 @@
   "display": "fullscreen",
   "name": "sosyal medyas",
   "short_name": "medyas",
-  "start_url": "./",
+  "start_url": "/",
   "scope": "/",
   "lang": "en",
   "description": "social media",
